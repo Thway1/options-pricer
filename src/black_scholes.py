@@ -99,6 +99,63 @@ def gamma_finite_diff(S, K, T, r, sigma, h=0.01):
     price_down = black_scholes_call(S-h, K, T, r, sigma)
     return (price_up - 2 * price_mid + price_down) / (h**2)
 
+# --- Greeks : Vega ---
+def vega(S, K, T, r, sigma):
+    """
+    Analytical Vega (same formula for calls and puts): dC/d(sigma).
+    Measures the option price's sensitivity to a change in volatility.
+    Uses the normal PDF, since it comes from differentiating N(d1) with
+    respect to sigma (same underlying mechanism as Gamma's derivation,
+    just differentiating with respect to a different variable).
+    Conventionally scaled by 0.01 so the result represents the price
+    change for a 1 percentage point move in volatility (e.g. 20% -> 21%),
+    rather than a full 100 percentage point move.
+    """
+    d1 = (np.log(S/K) + ((r+ 0.5 * sigma**2)*T)) / (sigma*np.sqrt(T))
+    return S * np.sqrt(T) * norm.pdf(d1) * 0.01
+
+def vega_finite_diff(S, K, T, r, sigma, h=0.01):
+    """
+    Numerical Vega via central finite difference, bumping sigma instead of S:
+    (C(sigma+h) - C(sigma-h)) / 2h. Validates the analytical Vega above.
+    Note: h is much smaller here than for Delta/Gamma, since sigma is
+    typically a small decimal (e.g. 0.2), so a proportionally smaller
+    bump keeps the approximation accurate.
+    """
+    price_up = black_scholes_call(S, K, T, r, sigma+h)
+    price_down = black_scholes_call(S, K, T, r, sigma-h)
+    return (price_up-price_down)/(2*h) * 0.01
+
+# --- Greeks : Vega ---
+def theta_call(S, K, T, r, sigma):
+    """
+    Analytical Theta for a call option: how the option's fair value
+    changes as time passes (T decreases), holding S, K, r, sigma fixed.
+    Conventionally expressed per day (dividing the raw annual value by 365),
+    since "value lost per year" isn't a practically useful number to reason
+    about day-to-day.
+    """
+    d1 = (np.log(S/K) + ((r+ 0.5 * sigma**2)*T)) / (sigma*np.sqrt(T))
+    d2 = d1 - sigma*np.sqrt(T)
+
+    term1 = (-S * norm.pdf(d1) * sigma) / (2 * np.sqrt(T))
+    term2 = -r * K * (np.exp(-r * T)) * norm.cdf(d2)
+    theta_annual = term1 + term2
+    return theta_annual/365
+
+def theta_call_finite_diff(S, K, T, r, sigma, h=0.0001):
+    """
+    Numerical Theta via finite difference, bumping T. Since Theta measures
+    value change as time PASSES (T decreasing), this compares price at a
+    slightly smaller T against the current price, then converts to a
+    per-day figure to match the analytical convention above.
+    """
+    price_now = black_scholes_call(S, K, T, r, sigma)
+    price_later = black_scholes_call(S, K, T - h, r, sigma)
+    #foward difference (one directional)
+    theta_approx = (price_later - price_now) / h 
+    return theta_approx / 365
+
 # --- Tests / demonstration ---
 if __name__ == "__main__":
     call_price = black_scholes_call(100, 100, 1, 0.05, 0.2)
@@ -123,3 +180,17 @@ if __name__ == "__main__":
     print (f"Analytical Gamma: {analytical_gamma:.6f}")
     print (f"Numerical Gamma: {numerical_gamma:.6f}")
     print (f"Difference; {abs(analytical_gamma - numerical_gamma):.10f}")
+
+    print("\n--- Vega Check ---")
+    analytical_vega = vega(100, 100, 1, 0.05, 0.2)
+    numerical_vega = vega_finite_diff(100, 100, 1, 0.05, 0.2)
+    print(f"Analytical Vega: {analytical_vega:.6f}")
+    print(f"Finite Diff Vega: {numerical_vega:.6f}")
+    print(f"Difference: {abs(analytical_vega - numerical_vega):.10f}")
+
+    print("\n--- Theta Check ---")
+    analytical_theta = theta_call(100, 100, 1, 0.05, 0.2)
+    numerical_theta = theta_call_finite_diff(100, 100, 1, 0.05, 0.2)
+    print(f"Analytical Theta: {analytical_theta:.6f}")
+    print(f"Finite Diff Theta: {numerical_theta:.6f}")
+    print(f"Difference: {abs(analytical_theta - numerical_theta):.10f}")
