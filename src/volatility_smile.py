@@ -4,6 +4,16 @@ import matplotlib.pyplot as plt
 from implied_vol import implied_vol_call
 from datetime import datetime
 
+def get_plots_dir():
+    """
+    Returns the absolute path to the project's plots/ folder, regardless
+    of which directory the script is run from.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    plots_dir = os.path.join(script_dir, '..', 'plots')
+    os.makedirs(plots_dir, exist_ok=True)
+    return plots_dir
+
 def get_option_chain(ticker_symbol):
     ticker = yf.Ticker(ticker_symbol)
     current_price = ticker.history(period="1d")['Close'].iloc[-1]
@@ -65,8 +75,7 @@ def plot_volatility_smile(strikes, implied_vols, ticker_symbol, expiry_date_str)
     plt.title(f'{ticker_symbol} Volatility Smile (Expiry: {expiry_date_str})')
     plt.grid(True)
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    save_path = os.path.join(script_dir, '..', 'plots', 'volatility_smile.png')
+    save_path = os.path.join(get_plots_dir(), 'volatility_smile.png')
     plt.savefig(save_path)
     plt.show()
 

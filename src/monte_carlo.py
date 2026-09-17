@@ -1,6 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from black_scholes import black_scholes_call
+import os
+
+def get_plots_dir():
+    """
+    Returns the absolute path to the project's plots/ folder, regardless
+    of which directory the script is run from.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    plots_dir = os.path.join(script_dir, '..', 'plots')
+    os.makedirs(plots_dir, exist_ok=True)
+    return plots_dir
 
 def simulated_stock_prices(S, T, r, sigma, num_sims):
     """
@@ -39,6 +50,37 @@ def convergence_data(S, K, T, r, sigma, sim_counts):
         prices.append(price)
     return prices
 
+def simulate_price_paths(S, T, r, sigma, num_sims, num_steps):
+    """
+    Simulates full price paths (not just the final price) using GBM,
+    stepping forward in small time increments. Unlike simulate_stock_prices
+    (which jumps directly to S_T), this tracks every intermediate value --
+    needed for visualizing the random walk, or for path-dependent options
+    (not used in this project's pricing, but useful for illustration).
+    """
+    dt = T/num_steps
+    paths = np.zeros((num_sims, num_steps+1))
+    paths[:,0] = S
+
+    for t in range(1, num_steps+1):
+        Z = np.random.standard_normal(num_sims)
+        paths[:, t] = paths[:, t-1] * np.exp((r - 0.5 * sigma**2) * dt + sigma * np.sqrt(dt) * Z)
+
+    return paths
+
+def plot_price_paths(S, T, r, sigma, num_sims=200, num_steps=250):
+    paths = simulate_price_paths(S, T, r, sigma, num_sims, num_steps)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(paths.T, linewidth=0.8, alpha=0.7)
+    plt.xlabel('Time Steps')
+    plt.ylabel('Simulated Stock Price')
+    plt.title('Simulated GBM Price Paths')
+
+    save_path = os.path.join(get_plots_dir(), 'simulated_paths.png')
+    plt.savefig(save_path)
+    plt.show()
+
 if __name__ == "__main__":
     prices = simulated_stock_prices(100, 1, 0.05, 0.2, 10000)
     print(f"Mean of Simulated Prices: {prices.mean():.2f}")
@@ -50,7 +92,7 @@ if __name__ == "__main__":
     sim_counts = [100, 500, 1000, 5000, 10000, 50000, 100000, 500000]
     mc_prices = convergence_data(100, 100, 1, 0.05, 0.2, sim_counts)
     bs_price = black_scholes_call(100, 100, 1, 0.05, 0.2)
-    
+
     for n, price in zip(sim_counts, mc_prices):
         print(f"n={n:>7}: MC Price = {price:.4f}")
     print(f"Black-Scholes Price: {bs_price:.4f}")
@@ -65,3 +107,6 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig('monte_carlo_convergence.png')
     plt.show()
+
+    print("\n--- Simulated Price Paths ---")
+    plot_price_paths(S=100, T=1, r=0.05, sigma=0.2, num_sims=200, num_steps=250)
