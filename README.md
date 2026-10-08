@@ -20,7 +20,7 @@ S = 100, K = 100, T = 1 year, r = 5%, σ = 20%
 |---|---|---|
 | Black-Scholes | 10.4506 | 5.5735 |
 | Binomial tree (N = 1000) | 10.4486 | 5.5715 |
-| Monte Carlo (500,000 sims) | 10.44 | [your value] |
+| Monte Carlo (500,000 sims) | 10.44 | 5.57 |
 | Binomial tree, American | 10.4486 | 6.0896 |
 
 The American put is worth more than the European put because early exercise has value for puts. The American call equals the European call, since early exercise is never optimal for a call on a non-dividend stock.
