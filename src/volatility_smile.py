@@ -72,7 +72,7 @@ def plot_volatility_smile(iv_table, S, ticker, expiry):
 
     path = os.path.join(get_plots_dir(), f"volatility_smile_{ticker}.png")
     fig.savefig(path, dpi=150, bbox_inches="tight")
-    print(f"Saved {path}")
+    print(f"Saved plots/{os.path.basename(path)}")
     return path
 
 
