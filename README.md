@@ -28,7 +28,8 @@ The American put is worth more than the European put because early exercise has 
 ![Binomial convergence](plots/binomial_convergence.png)
 ![Monte Carlo convergence](plots/monte_carlo_convergence.png)
 
-DData from the 8 Oct 2026 close, expiry 17 Sep 2027. S = 375.00, K = 370 (at the money), T = 0.94, r = 5%, σ = 44.9% (implied from the market price of the at-the-money call).
+### 2. Real data: Tesla (TSLA)
+Data from the 8 Oct 2026 close, expiry 17 Sep 2027. S = 375.00, K = 370 (at the money), T = 0.94, r = 5%, σ = 44.9% (implied from the market price of the at-the-money call).
 
 | Method | Call | Put |
 |---|---|---|
@@ -41,16 +42,6 @@ The Black-Scholes call matches the market mid price (74.225) by construction, si
 
 ### 3. Volatility smile
 Implied volatility across strikes is not constant: about 47.2% at the lowest strike (270), falling to about 44.9% at the spot and roughly 44.5% to 44.8% above it. Black-Scholes assumes one volatility for all strikes, so this is direct evidence against that assumption.
-
-The Black-Scholes call matches the market mid price (74.225) by construction, since σ was solved from it. The table validates that the three methods agree on a realistic option.
-
-### 3. Volatility smile
-Implied volatility across strikes is not constant: about 47.2% at the lowest strike (270), falling to about 44.9% at the spot and roughly 44.5% to 44.8% above it. Black-Scholes assumes one volatility for all strikes, so this is direct evidence against that assumption.
-The Black-Scholes call matches the market mid price (72.72) by construction, since σ was solved from it. The table validates that the three methods agree on a realistic option.
-
-### 3. Volatility smile
-Implied volatility across strikes is not constant: about 46.7% at low strikes, falling to about 44.5% near the spot, and roughly flat above. Black-Scholes assumes one volatility for all strikes, so this is direct evidence against that assumption.
-
 ![TSLA volatility smile](plots/volatility_smile_TSLA.png)
 
 ## Design notes
