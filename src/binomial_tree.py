@@ -68,7 +68,7 @@ def plot_binomial_convergence(S, K, T, r, sigma, max_steps=200):
 
     path = os.path.join(get_plots_dir(), "binomial_convergence.png")
     fig.savefig(path, dpi=150, bbox_inches="tight")
-    print(f"Saved {path}")
+    print(f"Saved plots/{os.path.basename(path)}")
     return tree_prices
 
 
