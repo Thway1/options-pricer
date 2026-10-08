@@ -96,11 +96,11 @@ def plot_price_paths(S, T, r, sigma, num_sims=200, num_steps=250):
     plt.show()
 
 if __name__ == "__main__":
-    S = 370      # spot price: set to Tesla's current price
-    K = 370      # strike
+    S = 100      # spot price
+    K = 100      # strike
     T = 1        # time to expiry in years
     r = 0.05     # risk-free rate
-    sigma = 0.406 # volatility
+    sigma = 0.2 # volatility
     prices = simulated_stock_prices(S, K, r, sigma, 500_000)
     print(f"Mean of Simulated Prices: {prices.mean():.2f}")
     print(f"Min: {prices.min():.2f}, Max: {prices.max():.2f}")
@@ -131,9 +131,3 @@ if __name__ == "__main__":
 
     print("\n--- Simulated Price Paths ---")
     plot_price_paths(S=370, T=1, r=0.05, sigma=0.406, num_sims=200, num_steps=250)
-
-    import numpy as np
-
-    errs = [monte_carlo_call_price(S, K, T, r, sigma, 500_000)
-        - black_scholes_call(S, K, T, r, sigma) for _ in range(10)]
-    print(f"mean error: {np.mean(errs):.3f}, spread: {np.std(errs):.3f}")

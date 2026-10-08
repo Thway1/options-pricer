@@ -158,11 +158,11 @@ def theta_call_finite_diff(S, K, T, r, sigma, h=0.0001):
 
 # --- Tests / demonstration ---
 if __name__ == "__main__":
-    S = 370      # spot price: set to Tesla's current price
-    K = 370      # strike
+    S = 100      # spot price
+    K = 100      # strike
     T = 1        # time to expiry in years
     r = 0.05     # risk-free rate
-    sigma = 0.406 # volatility
+    sigma = 0.2 # volatility
 
     call_price = black_scholes_call(S, K, T, r, sigma)
     print(f"Call Price: {call_price:.2f}")
