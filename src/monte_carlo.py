@@ -101,7 +101,7 @@ if __name__ == "__main__":
     T = 1        # time to expiry in years
     r = 0.05     # risk-free rate
     sigma = 0.2 # volatility
-    prices = simulated_stock_prices(S, K, r, sigma, 500_000)
+    prices = simulated_stock_prices(S, T, r, sigma, 500_000)
     print(f"Mean of Simulated Prices: {prices.mean():.2f}")
     print(f"Min: {prices.min():.2f}, Max: {prices.max():.2f}")
     call_price = monte_carlo_call_price(S, K, T, r, sigma, 10000)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     bs_price = black_scholes_call(S, K, T, r, sigma)
 
     for n, price in zip(sim_counts, mc_prices):
-        print(f"n={n:>7}: MC Price = {call_price:.4f}")
+        print(f"n={n:>7}: MC Price = {price:.4f}")
     print(f"Black-Scholes Price: {bs_price:.4f}")
 
     plt.figure(figsize=(8, 5))
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     plt.ylabel('Call Option Price')
     plt.title('Monte Carlo Convergence to Black-Scholes Price')
     plt.legend()
-    plt.savefig('monte_carlo_convergence.png')
+    plt.savefig(os.path.join(get_plots_dir(), 'monte_carlo_convergence.png'))
     plt.show()
 
     print("\n--- Simulated Price Paths ---")
-    plot_price_paths(S=370, T=1, r=0.05, sigma=0.406, num_sims=200, num_steps=250)
+    plot_price_paths(S=S, T=T, r=r, sigma=sigma, num_sims=200, num_steps=250)

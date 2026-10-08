@@ -28,4 +28,4 @@ if __name__ == "__main__":
     print(f"Market Price generated with true sigma: {market_price:.4f}")
 
     recovered_sigma = implied_vol_call(market_price, 100, 100, 1, 0.05)
-    print(f"Recovered implied volitility {recovered_sigma:.6f}")
+    print(f"Recovered implied volatility {recovered_sigma:.6f}")
