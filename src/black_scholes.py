@@ -158,39 +158,45 @@ def theta_call_finite_diff(S, K, T, r, sigma, h=0.0001):
 
 # --- Tests / demonstration ---
 if __name__ == "__main__":
-    call_price = black_scholes_call(100, 100, 1, 0.05, 0.2)
+    S = 370      # spot price: set to Tesla's current price
+    K = 370      # strike
+    T = 1        # time to expiry in years
+    r = 0.05     # risk-free rate
+    sigma = 0.406 # volatility
+
+    call_price = black_scholes_call(S, K, T, r, sigma)
     print(f"Call Price: {call_price:.2f}")
-    put_price = black_scholes_put(100, 100, 1, 0.05, 0.2)
+    put_price = black_scholes_put(S, K, T, r, sigma)
     print(f"Put Price: {put_price:.2f}")
 
-    print("\n --- Put-Call Parity Check ---")
-    is_valid = check_call_put_parity(100, 100, 1, 0.05, 0.2)
+    print("\n--- Put-Call Parity Check ---")
+    is_valid = check_call_put_parity(S, K, T, r, sigma)
     print(f"Parity Holds: {is_valid}")
 
-    print("\n---Delta Check---")
-    analytical_delta = delta_call(100, 100, 1, 0.05, 0.2)
-    numerical_delta = delta_call_finite_diff(100, 100, 1, 0.05, 0.2)
+    print("\n--- Delta Check ---")
+    analytical_delta = delta_call(S, K, T, r, sigma)
+    numerical_delta = delta_call_finite_diff(S, K, T, r, sigma)
     print(f"Analytical Delta: {analytical_delta:.6f}")
     print(f"Numerical Delta: {numerical_delta:.6f}")
-    print(f"Differenc: {abs(analytical_delta-numerical_delta):.10f}")
+    print(f"Difference: {abs(analytical_delta - numerical_delta):.10f}")
 
-    print("\n---Gamma Check---")
-    analytical_gamma = gamma(100, 100, 1, 0.05, 0.2)
-    numerical_gamma = gamma_finite_diff(100, 100, 1, 0.05, 0.2)
-    print (f"Analytical Gamma: {analytical_gamma:.6f}")
-    print (f"Numerical Gamma: {numerical_gamma:.6f}")
-    print (f"Difference; {abs(analytical_gamma - numerical_gamma):.10f}")
+    print("\n--- Gamma Check ---")
+    analytical_gamma = gamma(S, K, T, r, sigma)
+    numerical_gamma = gamma_finite_diff(S, K, T, r, sigma)
+    print(f"Analytical Gamma: {analytical_gamma:.6f}")
+    print(f"Numerical Gamma: {numerical_gamma:.6f}")
+    print(f"Difference: {abs(analytical_gamma - numerical_gamma):.10f}")
 
     print("\n--- Vega Check ---")
-    analytical_vega = vega(100, 100, 1, 0.05, 0.2)
-    numerical_vega = vega_finite_diff(100, 100, 1, 0.05, 0.2)
+    analytical_vega = vega(S, K, T, r, sigma)
+    numerical_vega = vega_finite_diff(S, K, T, r, sigma)
     print(f"Analytical Vega: {analytical_vega:.6f}")
     print(f"Finite Diff Vega: {numerical_vega:.6f}")
     print(f"Difference: {abs(analytical_vega - numerical_vega):.10f}")
 
     print("\n--- Theta Check ---")
-    analytical_theta = theta_call(100, 100, 1, 0.05, 0.2)
-    numerical_theta = theta_call_finite_diff(100, 100, 1, 0.05, 0.2)
+    analytical_theta = theta_call(S, K, T, r, sigma)
+    numerical_theta = theta_call_finite_diff(S, K, T, r, sigma)
     print(f"Analytical Theta: {analytical_theta:.6f}")
     print(f"Finite Diff Theta: {numerical_theta:.6f}")
     print(f"Difference: {abs(analytical_theta - numerical_theta):.10f}")

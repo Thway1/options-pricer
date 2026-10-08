@@ -38,6 +38,20 @@ def monte_carlo_call_price(S, K, T, r, sigma, num_sims):
     price = np.exp(-r*T) * average_payoff
     return price
 
+def monte_carlo_put_price(S, K, T, r, sigma, num_sims):
+    """
+    Prices a European put option via Monte Carlo simulation:
+    1. Simulate many possible stock prices at expiry (S_T)
+    2. Compute the put payoff for each: max(K - S_T, 0)
+    3. Average all payoffs (expected payoff under risk-neutral measure)
+    4. Discount that average back to today using e^(-rT)
+    """
+    S_T = simulated_stock_prices(S, T, r, sigma, num_sims)
+    payoffs = np.maximum(K - S_T, 0)
+    average_payoff = np.mean(payoffs)
+    price = np.exp(-r*T) * average_payoff
+    return price
+
 def convergence_data(S, K, T, r, sigma, sim_counts):
     """
     Computes the Monte Carlo price at each simulation count in the given
@@ -82,19 +96,26 @@ def plot_price_paths(S, T, r, sigma, num_sims=200, num_steps=250):
     plt.show()
 
 if __name__ == "__main__":
-    prices = simulated_stock_prices(100, 1, 0.05, 0.2, 10000)
+    S = 370      # spot price: set to Tesla's current price
+    K = 370      # strike
+    T = 1        # time to expiry in years
+    r = 0.05     # risk-free rate
+    sigma = 0.406 # volatility
+    prices = simulated_stock_prices(S, K, r, sigma, 500_000)
     print(f"Mean of Simulated Prices: {prices.mean():.2f}")
     print(f"Min: {prices.min():.2f}, Max: {prices.max():.2f}")
-    price = monte_carlo_call_price(100, 100, 1, 0.05, 0.2, 10000)
-    print(f"Monte Carlo Call Price: {price:.4f}")
+    call_price = monte_carlo_call_price(S, K, T, r, sigma, 10000)
+    print(f"Monte Carlo Call Price: {call_price:.4f}")
+    put_price = monte_carlo_put_price(S, K, T, r, sigma, 10000)
+    print(f"Monte Carlo Put Price: {put_price:.4f}")
 
     print("\n --- Convergence Check ---")
     sim_counts = [100, 500, 1000, 5000, 10000, 50000, 100000, 500000]
-    mc_prices = convergence_data(100, 100, 1, 0.05, 0.2, sim_counts)
-    bs_price = black_scholes_call(100, 100, 1, 0.05, 0.2)
+    mc_prices = convergence_data(S, K, T, r, sigma, sim_counts)
+    bs_price = black_scholes_call(S, K, T, r, sigma)
 
     for n, price in zip(sim_counts, mc_prices):
-        print(f"n={n:>7}: MC Price = {price:.4f}")
+        print(f"n={n:>7}: MC Price = {call_price:.4f}")
     print(f"Black-Scholes Price: {bs_price:.4f}")
 
     plt.figure(figsize=(8, 5))
@@ -109,4 +130,10 @@ if __name__ == "__main__":
     plt.show()
 
     print("\n--- Simulated Price Paths ---")
-    plot_price_paths(S=100, T=1, r=0.05, sigma=0.2, num_sims=200, num_steps=250)
+    plot_price_paths(S=370, T=1, r=0.05, sigma=0.406, num_sims=200, num_steps=250)
+
+    import numpy as np
+
+    errs = [monte_carlo_call_price(S, K, T, r, sigma, 500_000)
+        - black_scholes_call(S, K, T, r, sigma) for _ in range(10)]
+    print(f"mean error: {np.mean(errs):.3f}, spread: {np.std(errs):.3f}")

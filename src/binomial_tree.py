@@ -75,7 +75,7 @@ def plot_binomial_convergence(S, K, T, r, sigma, max_steps=200):
 if __name__ == "__main__":
     from black_scholes import black_scholes_call, black_scholes_put
 
-    S, K, T, r, sigma = 100, 100, 1, 0.05, 0.2
+    S, K, T, r, sigma = 370, 370, 1, 0.05, 0.406
 
     print("Hand-check (put): N=1 -> 7.29, N=2 European -> 4.66, N=2 American -> 5.74")
     print(f"N=1 Euro put: {binomial_tree_price(S, K, T, r, sigma, 1, 'put'):.2f}")
