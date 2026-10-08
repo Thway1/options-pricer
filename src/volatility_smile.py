@@ -9,14 +9,18 @@ import matplotlib.pyplot as plt
 from implied_vol import implied_vol_call
 from monte_carlo import get_plots_dir
 
-RISK_FREE_RATE = 0.005
+RISK_FREE_RATE = 0.05
 
 
-def get_option_chain(ticker="AAPL", expiry_index=3):
-    """Download live call options for one expiry. Returns (calls, spot, expiry_date)."""
+def get_option_chain(ticker="AAPL", target_days=365):
+    """Download live call options for the expiry closest to target_days from today.
+    Returns (calls, spot, expiry_date)."""
     stock = yf.Ticker(ticker)
-    expiries = stock.options
-    expiry = expiries[min(expiry_index, len(expiries) - 1)]
+    today = datetime.now()
+    expiry = min(
+        stock.options,
+        key=lambda e: abs((datetime.strptime(e, "%Y-%m-%d") - today).days - target_days),
+    )
     calls = stock.option_chain(expiry).calls.copy()
     calls["mid_price"] = (calls["bid"] + calls["ask"]) / 2
     spot = float(stock.history(period="1d")["Close"].iloc[-1])
@@ -76,7 +80,7 @@ if __name__ == "__main__":
     ticker = "TSLA"   # change to "AAPL" etc.
     r = RISK_FREE_RATE
 
-    calls, S, expiry = get_option_chain(ticker)
+    calls, S, expiry = get_option_chain(ticker, target_days=365)
     T = time_to_expiry(expiry)
     iv_table = calculate_implied_vols(calls, S, T, r)
 
