@@ -28,16 +28,24 @@ The American put is worth more than the European put because early exercise has 
 ![Binomial convergence](plots/binomial_convergence.png)
 ![Monte Carlo convergence](plots/monte_carlo_convergence.png)
 
-### 2. Real data: Tesla (TSLA)
-Data as of 8 Oct 2026, expiry 17 Sep 2027. S = 373.36, K = 370 (at the money), T = 0.94, r = 5%, σ = 44.5% (implied from the market price of the at-the-money call).
+DData from the 8 Oct 2026 close, expiry 17 Sep 2027. S = 375.00, K = 370 (at the money), T = 0.94, r = 5%, σ = 44.9% (implied from the market price of the at-the-money call).
 
 | Method | Call | Put |
 |---|---|---|
-| Black-Scholes | 72.73 | 52.38 |
-| Binomial tree (N = 1000) | 72.74 | 52.39 |
-| Monte Carlo (500,000 sims) | 72.50 | 52.40 |
-| Binomial tree, American | 72.74 | 54.13 |
+| Black-Scholes | 74.23 | 52.29 |
+| Binomial tree (N = 1000) | 74.24 | 52.31 |
+| Monte Carlo (500,000 sims) | 74.28 | 52.30 |
+| Binomial tree, American | 74.24 | 54.01 |
 
+The Black-Scholes call matches the market mid price (74.225) by construction, since σ was solved from it. The table validates that the three methods agree on a realistic option.
+
+### 3. Volatility smile
+Implied volatility across strikes is not constant: about 47.2% at the lowest strike (270), falling to about 44.9% at the spot and roughly 44.5% to 44.8% above it. Black-Scholes assumes one volatility for all strikes, so this is direct evidence against that assumption.
+
+The Black-Scholes call matches the market mid price (74.225) by construction, since σ was solved from it. The table validates that the three methods agree on a realistic option.
+
+### 3. Volatility smile
+Implied volatility across strikes is not constant: about 47.2% at the lowest strike (270), falling to about 44.9% at the spot and roughly 44.5% to 44.8% above it. Black-Scholes assumes one volatility for all strikes, so this is direct evidence against that assumption.
 The Black-Scholes call matches the market mid price (72.72) by construction, since σ was solved from it. The table validates that the three methods agree on a realistic option.
 
 ### 3. Volatility smile
